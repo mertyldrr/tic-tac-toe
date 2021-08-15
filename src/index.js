@@ -119,7 +119,13 @@ const Game = () => {
   let status;
   if (winnerSquares && winnerSquares.winner) {
     status = 'Winner: ' + winnerSquares.winner;
-  } else {
+  } 
+
+  else if ((history.length - 1) === 9) {
+    status = 'Draw'
+  }
+  
+  else {
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
 
@@ -133,7 +139,7 @@ const Game = () => {
           onClick={(i) => handleClick(i)} />
       </div>
       <div className="game-info">
-        <div>{status}<button onClick={() => setDescending(!descending)} className="change-order">Change order</button></div>
+        <div><strong>{status}</strong><button onClick={() => setDescending(!descending)} className="change-order">Change order</button></div>
         {descending ?
           <ol>{sortMoves}</ol>
           :
