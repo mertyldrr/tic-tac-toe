@@ -3,11 +3,18 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 const Square = (props) => {
+
+  const winningSquareStyle = {
+    backgroundColor: '#ccc',
+    border: '3px solid coral'
+  };
+
   // passed a prop from a parent(Board) component to a child(Square) component.
   return (
     <button
       className="square"
       onClick={() => props.onClick()}
+      style={props.winningSquare ? winningSquareStyle : null}
     >
       {props.value}
     </button>
@@ -24,11 +31,13 @@ const Board = (props) => {
 
 
   const renderSquare = (i) => {
+    let winningSquare = props.winnerSquares && props.winnerSquares.includes(i) ? true : false;
     // Each Square will now receive a value prop that will either be 'X', 'O', or null for empty squares.
     return (
       <Square
         key={i}
         value={props.squares[i]}
+        winningSquare={winningSquare}
         onClick={() => props.onClick(i)}
       />
     )
@@ -39,14 +48,12 @@ const Board = (props) => {
     let content = []
     for (let i = 0; i < row; i++) {
       // key is -i to prevent clash between parent and child keys, also squares have keys 1 to 9. 
-      content.push(<div key={-i} className="board-row"></div>)
+      content.push(<div key={-i-1} className="board-row"></div>)
       for (let j = 0; j < col; j++) {
-        count++;
-        console.log(count);
         content.push(renderSquare(count))
+        count++;
       }
     }
-    console.log(content);
     return content
   }
 
@@ -69,7 +76,7 @@ const Game = () => {
   const [activeMove, setActiveMove] = useState(0);
   const [descending, setDescending] = useState(false);
   const current = history[stepNumber];
-  const winner = calculateWinner(current);
+  const winnerSquares = calculateWinner(current);
 
   const moves = history.map((step, move) => {
     const desc = move ?
@@ -89,7 +96,9 @@ const Game = () => {
     const historyNew = history.slice(0, stepNumber + 1);
     const current = historyNew[historyNew.length - 1];
     const squares = [...current]
-    if (calculateWinner(squares) || squares[i])
+    console.log(i);
+    const winner = calculateWinner(squares);
+    if (winner || squares[i])
       return;
     squares[i] = xIsNext ? 'X' : 'O';
     setHistory([...historyNew, squares]);
@@ -108,8 +117,8 @@ const Game = () => {
 
 
   let status;
-  if (winner) {
-    status = 'Winner: ' + winner;
+  if (winnerSquares && winnerSquares.winner) {
+    status = 'Winner: ' + winnerSquares.winner;
   } else {
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
@@ -119,6 +128,7 @@ const Game = () => {
     <div className="game">
       <div className="game-board">
         <Board
+          winnerSquares={winnerSquares?.winnerSquares}
           squares={current}
           onClick={(i) => handleClick(i)} />
       </div>
@@ -155,19 +165,21 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {
+        winner : squares[a],
+        winnerSquares: lines[i]
+      };
     }
   }
   return null;
 }
 
 function calculateLocation(i) {
-  console.log(i)
   let row, col;
 
-  col = (i % 3)
-  if (col === 0)
-    col = 3;
+  col = (i % 3) + 1
+  // if (col === 0)
+  //   col = 3;
 
   if (i <= 3)
     row = 1;
@@ -175,6 +187,5 @@ function calculateLocation(i) {
     row = 2;
   else
     row = 3;
-  console.log(row, col)
   return [row, col]
 }

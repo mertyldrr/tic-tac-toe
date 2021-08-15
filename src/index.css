@@ -59,3 +59,18 @@ ol, ul {
   color: blue;
   width: 150px;
 }
+
+.winner-square {
+  background: #fff;
+  border: 3px solid aqua;
+  float: left;
+  font-size: 72px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 136px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 136px;
+}
