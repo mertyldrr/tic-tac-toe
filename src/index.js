@@ -62,6 +62,7 @@ const Game = () => {
   // track step count
   const [stepNumber, setStepNumber] = useState(0);
   const [location, setLocation] = useState([Array(2).fill(null)])
+  const [activeMove, setActiveMove] = useState(0);
   const current = history[stepNumber];
   const winner = calculateWinner(current);
   const moves = history.map((step, move) => {
@@ -69,10 +70,10 @@ const Game = () => {
       'Go to move #' + move :
       'Go to game start';
     return (
-      <li key={move}>
-        <button onClick={() => jumpTo(move)}>{desc}</button>
-        <p>{(move && location[move]) ? `(${location[move][0]}, ${location[move][1]})` : ''}</p>
-      </li>
+        <li className={`${activeMove === move ? 'active-move' : null}`} key={move}>
+          <button className={`${activeMove === move ? 'active-move' : null}`} onClick={() => jumpTo(move)}>{desc}</button>
+          <p>{(move && location[move]) ? `(${location[move][0]}, ${location[move][1]})` : ''}</p>
+        </li>
     );
   });
 
@@ -87,10 +88,12 @@ const Game = () => {
     setStepNumber(historyNew.length);
     setXIsNext(!xIsNext);
     setLocation([...location, calculateLocation(i)])
+    setActiveMove(historyNew.length);
   };
 
   const jumpTo = (step) => {
     setStepNumber(step);
+    setActiveMove(step);
     setXIsNext((step % 2) === 0);
   };
 
