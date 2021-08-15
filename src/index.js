@@ -23,7 +23,7 @@ const Board = (props) => {
 
 
 
-  function renderSquare(i) {
+  const renderSquare = (i) => {
     // Each Square will now receive a value prop that will either be 'X', 'O', or null for empty squares.
     return (
       <Square
@@ -32,24 +32,24 @@ const Board = (props) => {
       />
     )
   }
+
+  const renderBoard = (row, col) => {
+    let count = 0;
+    let content = []
+    for (let i = 0; i < row; i++) {
+      content.push(<div className="board-row"></div>)
+      for (let j = 0; j < col; j++) {
+        count++;
+        content.push(renderSquare(count))
+      }
+      count++;
+    }
+    return content
+  }
   
   return (
     <div>
-      <div className="board-row">
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
-      </div>
-      <div className="board-row">
-        {renderSquare(3)}
-        {renderSquare(4)}
-        {renderSquare(5)}
-      </div>
-      <div className="board-row">
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-      </div>
+      {renderBoard(3, 3)}
     </div>
   );
 }
