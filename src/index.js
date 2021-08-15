@@ -27,6 +27,7 @@ const Board = (props) => {
     // Each Square will now receive a value prop that will either be 'X', 'O', or null for empty squares.
     return (
       <Square
+        key={i}
         value={props.squares[i]}
         onClick={() => props.onClick(i)}
       />
@@ -37,20 +38,23 @@ const Board = (props) => {
     let count = 0;
     let content = []
     for (let i = 0; i < row; i++) {
-      content.push(<div className="board-row"></div>)
+      // key is -i to prevent clash between parent and child keys, also squares have keys 1 to 9. 
+      content.push(<div key={-i} className="board-row"></div>)
       for (let j = 0; j < col; j++) {
         count++;
+        console.log(count);
         content.push(renderSquare(count))
       }
-      count++;
     }
+    console.log(content);
     return content
   }
-  
+
   return (
     <div>
       {renderBoard(3, 3)}
     </div>
+
   );
 }
 
@@ -63,19 +67,23 @@ const Game = () => {
   const [stepNumber, setStepNumber] = useState(0);
   const [location, setLocation] = useState([Array(2).fill(null)])
   const [activeMove, setActiveMove] = useState(0);
+  const [descending, setDescending] = useState(false);
   const current = history[stepNumber];
   const winner = calculateWinner(current);
+
   const moves = history.map((step, move) => {
     const desc = move ?
       'Go to move #' + move :
       'Go to game start';
     return (
-        <li className={`${activeMove === move ? 'active-move' : null}`} key={move}>
-          <button className={`${activeMove === move ? 'active-move' : null}`} onClick={() => jumpTo(move)}>{desc}</button>
-          <p>{(move && location[move]) ? `(${location[move][0]}, ${location[move][1]})` : ''}</p>
-        </li>
+      <li className={`${activeMove === move ? 'active-move' : null}`} key={move}>
+        <button className={`${activeMove === move ? 'active-move' : null}`} onClick={() => jumpTo(move)}>{desc}</button>
+        <p>{(move && location[move]) ? `(${location[move][0]}, ${location[move][1]})` : ''}</p>
+      </li>
     );
   });
+
+  const sortMoves = moves.slice(0).sort((a, b) => b.move - a.move ? 1 : -1)
 
   const handleClick = (i) => {
     const historyNew = history.slice(0, stepNumber + 1);
@@ -97,6 +105,8 @@ const Game = () => {
     setXIsNext((step % 2) === 0);
   };
 
+
+
   let status;
   if (winner) {
     status = 'Winner: ' + winner;
@@ -113,8 +123,11 @@ const Game = () => {
           onClick={(i) => handleClick(i)} />
       </div>
       <div className="game-info">
-        <div>{status}</div>
-        <ol>{moves}</ol>
+        <div>{status}<button onClick={() => setDescending(!descending)} className="change-order">Change order</button></div>
+        {descending ?
+          <ol>{sortMoves}</ol>
+          :
+          <ol>{moves}</ol>}
       </div>
     </div>
   );
@@ -148,16 +161,20 @@ function calculateWinner(squares) {
   return null;
 }
 
-const calculateLocation = (i) => {
+function calculateLocation(i) {
+  console.log(i)
   let row, col;
-  col = (i % 3) + 1
 
-  if (i < 3)
+  col = (i % 3)
+  if (col === 0)
+    col = 3;
+
+  if (i <= 3)
     row = 1;
-  else if (i < 6)
+  else if (i <= 6)
     row = 2;
   else
     row = 3;
-  
+  console.log(row, col)
   return [row, col]
 }

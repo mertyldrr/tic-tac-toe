@@ -53,3 +53,9 @@ ol, ul {
   font-weight: 700;
   color: red;
 }
+
+.change-order {
+  margin-left: 70px;
+  color: blue;
+  width: 150px;
+}
